@@ -13,6 +13,21 @@ def get_price_day_tx(code, end_date='', count=10, frequency='1d'):     #日线�
     df.time=pd.to_datetime(df.time);    df.set_index(['time'], inplace=True);   df.index.name=''          #处理索引 
     return df
 
+#腾讯日线
+def get_price_today_tx(code):     #日线获取
+    URL=f'http://qt.gtimg.cn/q={code}'
+    str = requests.get(URL).text;
+    strArrays = str.split(';');
+    s1 = [];
+    for index in range(len(strArrays)-1):
+        strArray = strArrays[index].split('~')
+        s1.append([strArray[1],strArray[2],strArray[3],strArray[32],strArray[39]])
+    # 1股票名称 2股票代码 3当前价  4涨跌幅 5 PE（TTM）
+    # s1 = [strArray[1],strArray[2],strArray[3],strArray[32],strArray[39]]
+    df = pd.DataFrame(s1, columns=['股票名', '代码', '现价', '涨跌%', '市盈率（TTM）'])
+    return df
+    # return strArray[1],strArray[2],strArray[3],strArray[32],strArray[39]
+
 #腾讯分钟线
 def get_price_min_tx(code, end_date=None, count=10, frequency='1d'):    #分钟线获取 
     ts=int(frequency[:-1]) if frequency[:-1].isdigit() else 1           #解析K线周期数
